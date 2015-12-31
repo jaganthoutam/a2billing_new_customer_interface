@@ -42,7 +42,7 @@ $today = date('Y-m-d', time());
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
 <?php
-$allowd = "WHERE t1.starttime >= ('$today') AND t1.starttime <= ('$today 23:59:59') AND t1.card_id='$id' order by id desc LIMIT $start, $limit";
+$allowd = "WHERE t1.starttime >= ('$today') AND t1.starttime <= ('$today 23:59:59') AND t1.card_id='$id'";
 
 if (!empty($_GET["callerid"])) {
 
@@ -59,12 +59,11 @@ if (!empty($_GET["fromdate"]) && !empty($_GET["todate"] )) {
 $startdate = $_GET["fromdate"];
 $enddate   = $_GET["todate"];
 
-$allowd = "where t1.starttime >= ('$startdate') AND t1.starttime <= ('$enddate 23:59:59') AND t1.card_id='$id' order by id desc";
+$allowd = "where t1.starttime >= ('$startdate') AND t1.starttime <= ('$enddate 23:59:59') AND t1.card_id='$id' order by id asc";
 
 $date = true;
 
 }
-
 
 $sql = "SELECT count(*) as count FROM cc_call t1 $allowd";
 
@@ -74,7 +73,7 @@ $totalrecords = $result->fetch_object()->count;
 
 $adjacents = 5;
 $targetpage = "callhistory.php"; //your file name
-$limit = 10; //how many items to show per page
+$limit = 20; //how many items to show per page
 $page = $_GET['page'];
 
 if($page){
@@ -82,43 +81,13 @@ $start = ($page - 1) * $limit; //first item to display on this page
 }else{
 $start = 0;
 }
-/*
-$allowd = "WHERE t1.starttime >= ('$today') AND t1.starttime <= ('$today 23:59:59') AND t1.card_id='$id' order by id desc LIMIT $start, $limit";
 
-if (!empty($_GET["callerid"])) {
 
-$phonenumber = $_GET["callerid"];
-
-$allowd = "where t1.dnid like '%$phonenumber' AND t1.card_id='$id' order by id desc";
-
-}
-
-if (!empty($_GET["fromdate"]) && !empty($_GET["todate"] )) {
-
-$startdate = $_GET["fromdate"];
-$enddate   = $_GET["todate"];
-
-$allowd = "where t1.starttime >= ('$startdate') AND t1.starttime <= ('$enddate 23:59:59') AND t1.card_id='$id' order by id desc";
-
-}
-/*if (isset($_GET[""])) {
-
-$allowd = "WHERE t1.starttime >= ('$today') AND t1.starttime <= ('$today 23:59:59') AND t1.card_id='$id' order by id desc LIMIT $start, $limit";
-
-}  */
-
-//$sql = "SELECT * FROM cc_call t1 WHERE t1.starttime >= ('$today') AND t1.starttime <= ('$today 23:59:59') AND t1.card_id='$id' order by id desc LIMIT $start, $limit";
-
-if($date== 'true') {
 $targetpage = "callhistory.php?callerid=$phonenumber&fromdate=$startdate&todate=$enddate";
-//echo $targetpage;
-$allowd = $allowd." LIMIT $start, $limit";
-}
+
+$allowd = $allowd . " LIMIT $start, $limit";
 
 $sql = "SELECT * FROM cc_call t1 $allowd";
-//echo $sql;
-
-//echo $sql;
 
 $result = $conn->query($sql);
 
