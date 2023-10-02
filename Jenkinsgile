@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        GITLAB_API_TOKEN = 'glpat-Test'
+        GITLAB_PROJECT_ID = '6666666' // Replace with the actual project ID
+        SOURCE_BRANCH = 'feature-branch' // Replace with the source branch name
+        TARGET_BRANCH = 'master' // Replace with the target branch name
+        MR_TITLE = 'Merge Request Title'
+        MR_DESCRIPTION = 'Merge Request Description'
+    }
+
+    stages {
+        stage('Create Merge Request') {
+            steps {
+                script {
+                    def apiUrl = "https://gitlab.com/api/v4/projects/${GITLAB_PROJECT_ID}/merge_requests"
+                    def requestBody = [
+                        source_branch: SOURCE_BRANCH,
+                        target_branch: TARGET_BRANCH,
+                        title: MR_TITLE,
+                        description: MR_DESCRIPTION
+                    ]
+
+                    def response = httpRequest(
+                        acceptType: 'APPLICATION_JSON',
+                        contentType: 'APPLICATION_JSON',
+                        httpMode: 'POST',
+                        requestBody: groovy.json.JsonOutput.toJson(requestBody),
+                        url: apiUrl,
+                        customHeaders: [[name: 'PRIVATE-TOKEN', value: GITLAB_API_TOKEN]]
+                    )
+
+                    //echo "Merge Request Created! MR URL: ${response.headers.Location[0]}"
+                }
+            }
+        }
+    }
+}
